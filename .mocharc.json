@@ -1,0 +1,8 @@
+{
+    "node-option": [
+        "no-warnings",
+        "experimental-modules",
+        "experimental-specifier-resolution=node",
+        "loader=ts-node/esm"
+    ]
+}
