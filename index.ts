@@ -1,4 +1,4 @@
-export function factorize(elements: Array<string>): string {
+export function factorizeOr(elements: Array<string>): string {
     if (elements.length === 0) {
         return '';
     } else if (elements.length === 1) {
@@ -32,15 +32,21 @@ export function factorize(elements: Array<string>): string {
             return '[' + part.sort().join('') + ']';
         }
     } else {
-        if (hasCommonFirstChar(elements)) {
-            return (
-                elements[0][0] + 
-                factorize(elements.map(element => 
-                    element.slice(1)
-                ))
-            );
+        const cases: Array<string> = [];
+        for (const [hasCommonFirstChar, group] of groupElements(elements)) {
+            if (hasCommonFirstChar) {
+                cases.push(
+                    group[0][0] + 
+                    factorizeOr(group.map(element => element.slice(1)))
+                );
+            } else {
+                cases.push(...group);
+            }
+        }
+        if (cases.length > 1) {
+            return '(?:' + cases.join('|') + ')';
         } else {
-            return '(' + elements.join('|') + ')';
+            return cases[0];
         }
     }
 }
@@ -49,42 +55,28 @@ function hasOnlySingleChar(elements: Array<string>) {
     return !~elements.findIndex(str => str.length !== 1);
 }
 
-function hasCommonFirstChar(elements: Array<string>) {
-    const firstsChar = new Set(elements.map(str => str[0]));
-    return firstsChar.size < elements.length;
-}
-
-type AST = null | string | { [part: string]: null | Array<AST> } ;
-
-/*
-    const ast: AST = elements.reduce((result, id) => {
-        if (result === null) {
-            return id;
-        } else if (typeof result === 'string') {
-            if (result[0] === id[0]) {
-                let length = 1;
-                while (result[length] === id[length]) {
-                    length += 1;
-                }
-                return { 
-                    [result.slice(0, length)]: [
-                        result.slice(length), 
-                        id.slice(length)
-                    ]
-                };
+function* groupElements(
+    elements: Array<string>
+): Generator<[boolean, Array<string>], void> {
+    const list = elements.slice();
+    const singles: Array<string> = [];
+    while (list.length > 0) {
+        const group: Array<string> = [];
+        const reference = list.shift();
+        for (let i = 0; i < list.length;) {
+            if (reference[0] === list[i][0]) {
+                group.push(...list.splice(i, 1));
             } else {
-                return {
-                    [result]: null,
-                    [id]: null
-                };
-            }
-        } else if (typeof result === 'object') {
-            const keys = Object.keys(result).sort();
-            for (const key of keys) {
-                for (let i = 0; i < key.length; i += 1) {
-
-                }
+                i += 1;
             }
         }
-    }, null);
-*/
+        if (group.length === 0) {
+            singles.push(reference);
+        } else {
+            yield [true, [reference].concat(group)];
+        }
+    }
+    if (singles.length > 0) {
+        yield [false, singles];
+    }
+}

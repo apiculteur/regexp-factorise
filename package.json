@@ -1,14 +1,31 @@
 {
-  "name": "regexp-string-or-factorize",
-  "version": "1.0.0",
-  "description": "",
+  "name": "regexp-factorize",
+  "version": "1.0.1",
+  "description": "convert quadratic to logarithmic array of \"OR\" strings",
+  "private": false,
+  "keywords": [
+    "regexp", "regex", "factorize", "logarithmic"
+  ],
+  "homepage": "https://github.com/apiculteur/regexp-factorize",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apiculteur/regexp-factorize.git"
+  },
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "mocha test.spec.ts"
   },
-  "author": "",
+  "author": "Nicolas Pelletier <npelletier@apiculteur.io>",
   "license": "ISC",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "publishConfig":{
+    "registry": "https://registry.npmjs.org"
+  },
   "mocha": {
     "reporter": "spec",
     "full-trace": true,

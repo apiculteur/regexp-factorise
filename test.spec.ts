@@ -1,64 +1,70 @@
-import { factorize } from './index';
+import { factorizeOr } from './index';
 import { expect } from 'chai';
 
 describe('Factorize unity', () => {
 
-    it('should return empty string on empty array', () => {
-        expect(factorize([])).to.equals('');
+    it('[] => ""', () => {
+        expect(factorizeOr([])).to.equals('');
     });
 
-    it('should return element as it if their is only one element', () => {
-        expect(factorize(['a'])).to.equals('a');
+    it('[a] => a', () => {
+        expect(factorizeOr(['a'])).to.equals('a');
     });
 
 });
 
 describe('Factorize character class', () => {
 
-    it('should return class of elements if only two single char element', () => {
-        expect(factorize(['a', 'b'])).to.equals('[ab]');
+    it('[a, b] => [ab]', () => {
+        expect(factorizeOr(['a', 'b'])).to.equals('[ab]');
     });
 
-    it('should return class of elements if sequence of 3 elements', () => {
-        expect(factorize(['a', 'b', 'c'])).to.equals('[a-c]');
+    it('[a, b, c] => [a-c]', () => {
+        expect(factorizeOr(['a', 'b', 'c'])).to.equals('[a-c]');
     });
 
-    it('should return class of elements if sequence of 4 elements', () => {
-        expect(factorize(['a', 'b', 'c', 'd'])).to.equals('[a-d]');
+    it('[a, b, c, d] => [a-d]', () => {
+        expect(factorizeOr(['a', 'b', 'c', 'd'])).to.equals('[a-d]');
     });
 
-    it('should return class of elements if sequence and an other element', () => {
-        expect(factorize(['a', 'b', 'c', 'e'])).to.equals('[a-ce]');
+    it('[a, b, c, e] => [a-ce]', () => {
+        expect(factorizeOr(['a', 'b', 'c', 'e'])).to.equals('[a-ce]');
     });
 
-    it('should return class of elements if single element + sequence', () => {
-        expect(factorize(['a', 'c', 'd', 'e'])).to.equals('[ac-e]');
+    it('[a, c, d, e] => [ac-e]', () => {
+        expect(factorizeOr(['a', 'c', 'd', 'e'])).to.equals('[ac-e]');
     });
 
 });
 
-describe('Factorize with OR', () => {
+describe('Factorize OR set ', () => {
 
-    it('should return all chain separed by pipe', () => {
-        expect(factorize(['ab', 'ba'])).to.equals('(ab|ba)');
+    it('[ab, ba] => (?:ab|ba)', () => {
+        expect(factorizeOr(['ab', 'ba'])).to.equals('(?:ab|ba)');
     });
 
 });
 
 describe('Factorize complex', () => {
 
-    it('should return factor of 2 strings', () => {
-        expect(factorize(['ab', 'ac'])).to.equals('a[bc]');
+    it('[ab, ac] => a[bc]', () => {
+        expect(factorizeOr(['ab', 'ac'])).to.equals('a[bc]');
     });
 
-    it('should return factor of 3 strings', () => {
-        expect(factorize(['ab', 'ac', 'ad'])).to.equals('a[b-d]');
+    it('[ab, ac, ad] => a[b-d]', () => {
+        expect(factorizeOr(['ab', 'ac', 'ad'])).to.equals('a[b-d]');
     });
 
-    it('should return factor of 3 strings of 3 chars length', () => {
-        expect(factorize(['abc', 'abd', 'ade'])).to.equals('a(b[cd]|e)');
+    it('[abc, abd, abe] => ab[c-e]', () => {
+        expect(factorizeOr(['abc', 'abd', 'abe'])).to.equals('ab[c-e]');
     });
 
+    it('[abc, abd, ade] => a(?:b[cd]|de)', () => {
+        expect(factorizeOr(['abc', 'abd', 'ade'])).to.equals('a(?:b[cd]|de)');
+    });
 
+    it('[abc, abd, a] => a(?:b[cd]|)', () => {
+        expect(factorizeOr(['abc', 'abd', 'a'])).to.equals('a(?:b[cd]|)');
+    });
 
 });
